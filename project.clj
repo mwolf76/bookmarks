@@ -28,7 +28,8 @@
                  [ring-webjars "0.2.0"]
                  [ring/ring-core "1.6.2"]
                  [ring/ring-defaults "0.3.1"]
-                 [selmer "1.11.1"]]
+                 [selmer "1.11.1"]
+                 [camel-snake-kebab "0.4.0"]]
 
   :min-lein-version "2.0.0"
 

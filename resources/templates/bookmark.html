@@ -1,0 +1,36 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="row">
+  <div class="span12">
+    <form method="POST" action="#">
+      {% csrf-field %}
+      <p>
+        URL
+        <input class="form-control"
+                 type="text"
+                 name="url"
+                 value="{{url}}" />
+      </p>
+      {% if errors.name %}
+      <div class="alert alert-danger">{{errors.name|join}}</div>
+      {% endif %}
+      <p>
+        Description
+        <textarea class="form-control"
+                  rows="20"
+                  cols="50"
+                  name="descr">{{descr}}</textarea>
+      </p>
+      <p>
+        Last changed 
+        <time>{{last-changed}}</time>
+      </p>
+      {% if errors.message %}
+      <div class="alert alert-danger">{{errors.message|join}}</div>
+      {% endif %}
+      <a class="btn btn-primary" href="/">&laquo; back to list</a>
+      <input type="submit" class="btn btn-primary" value="save" />
+    </form>
+  </div>
+</div>
+{% endblock %}

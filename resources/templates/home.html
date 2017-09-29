@@ -1,8 +1,21 @@
 {% extends "base.html" %}
 {% block content %}
 <div class="row">
-  <div class="col-sm-12">
-    {{docs|markdown}}
+  <div class="span12">
+    <ul class="bookmarks">
+      {% for item in bookmarks %}
+      <li>
+        <time>{{item.last-changed|date:"yyyy-MM-dd HH:mm"}}</time>
+        <a href="{{item.url}}" target="#blank">{{item.url}}</a>
+        <a href="/bookmark/{{item.uuid}}">edit</a>
+        <a href="/bookmark/{{item.uuid}}/delete">delete?</a>
+        <p>{{item.descr}}</p>
+      </li>
+      {% endfor %}
+      <li>
+        <a href="/bookmark/new" class="btn btn-primary">new bookmark</a>
+      </li>
+    </ul>
   </div>
 </div>
 {% endblock %}

@@ -1,17 +1,14 @@
 (ns bookmarks.routes.home
-  (:require [bookmarks.layout :as layout]
-            [compojure.core :refer [defroutes GET]]
-            [ring.util.http-response :as response]
-            [clojure.java.io :as io]))
-
-(defn home-page []
-  (layout/render
-    "home.html" {:docs (-> "docs/docs.md" io/resource slurp)}))
-
-(defn about-page []
-  (layout/render "about.html"))
+  (:require [compojure.core :refer [defroutes GET POST]]
+            [bookmarks.controllers.core :as controllers]))
 
 (defroutes home-routes
-  (GET "/" [] (home-page))
-  (GET "/about" [] (about-page)))
+  (GET "/" req controllers/home-page)
+  (GET "/about" req controllers/about-page)
 
+  ;; bookmarks management (add/edit/delete)
+  (GET  "/bookmark/:uuid" [uuid :as req] (controllers/edit-bookmark req uuid))
+  (POST "/bookmark/:uuid" [uuid :as req] (controllers/save-bookmark! req uuid))
+
+  (GET  "/bookmark/:uuid/delete" [uuid :as req] (controllers/delete-bookmark req uuid))
+  (POST "/bookmark/:uuid/delete" [uuid :as req] (controllers/delete-bookmark! req uuid)))
