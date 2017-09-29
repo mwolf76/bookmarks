@@ -4,7 +4,7 @@
             [bookmarks.controllers.core :as controllers]))
 
 (defroutes home-routes
-  (GET "/" req (redirect "/bookmarks"))
+  (GET "/" req controllers/home-page)
   (GET "/bookmarks" req controllers/bookmarks-page)
   (GET "/classes" req controllers/classes-page)
   (GET "/about" req controllers/about-page)

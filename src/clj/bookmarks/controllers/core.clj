@@ -54,29 +54,32 @@
 (defn validate-class[params]
   (first (st/validate params class-schema)))
 
+(defn home-page [req]
+  (layout/render
+   "home.html"
+   (merge {:bookmarks (db/user-bookmarks
+                       {:owner "marco.pensallorto@gmail.com"})})))
+
 (defn bookmarks-page [{:keys [flash]}]
   (layout/render
    "bookmarks.html"
-   (merge 
-    {:bookmarks (db/user-bookmarks 
-                 {:owner "marco.pensallorto@gmail.com"})}
-    (select-keys flash [:name :message :errors]))))
+   (merge {:bookmarks (db/user-bookmarks
+                       {:owner "marco.pensallorto@gmail.com"})}
+          (select-keys flash [:name :message :errors]))))
 
 (defn classes-page [{:keys [flash]}]
   (layout/render
    "classes.html"
-   (merge 
-    {:classes (db/user-classes
-               {:owner "marco.pensallorto@gmail.com"})}
-    (select-keys flash [:name :message :errors]))))
+   (merge {:classes (db/user-classes
+                     {:owner "marco.pensallorto@gmail.com"})}
+          (select-keys flash [:name :message :errors]))))
 
 (defn members-page [{:keys [flash]}]
   (layout/render
    "class-members.html"
-   (merge 
-    {:members (db/get-bookmarks-by-class
-               {:owner "marco.pensallorto@gmail.com"})}
-    (select-keys flash [:name :message :errors]))))
+   (merge {:members (db/get-bookmarks-by-class
+                     {:owner "marco.pensallorto@gmail.com"})}
+          (select-keys flash [:name :message :errors]))))
 
 (defn alter-members! [{:keys [params]} uuid]
   (log/debug (format "alter-members! %s" params)))
@@ -91,9 +94,9 @@
     (layout/render "bookmark.html" {})
     (if-let [bookmark (db/get-bookmark-by-uuid {:uuid uuid})]
       (layout/render "bookmark.html"
-                   (merge 
-                    (select-keys bookmark [:uuid :url :descr :last-changed])
-                    (select-keys flash [:name :message :errors])))
+                     (merge
+                      (select-keys bookmark [:uuid :url :descr :last-changed])
+                      (select-keys flash [:name :message :errors])))
       (notfound))))
 
 (defn edit-class [{flash :flash} uuid]
@@ -103,9 +106,9 @@
     (layout/render "class.html" {})
     (if-let [class (db/get-class-by-uuid {:uuid uuid})]
       (layout/render "class.html"
-                   (merge 
-                    (select-keys class [:uuid :url :descr :last-changed])
-                    (select-keys flash [:name :message :errors])))
+                     (merge
+                      (select-keys class [:uuid :url :descr :last-changed])
+                      (select-keys flash [:name :message :errors])))
       (notfound))))
 
 (defn save-bookmark! [{:keys [params]} uuid]
@@ -114,19 +117,19 @@
     (do
       (log/debug (format "validation errors: %s" errors))
       (-> (redirect "/")
-          (assoc :flash 
+          (assoc :flash
             (assoc params :errors errors))))
     (do
       (if (= uuid "new")
-        (do 
+        (do
           (db/create-bookmark!
-           (assoc params 
+           (assoc params
              :uuid (java.util.UUID/randomUUID)
              :owner "marco.pensallorto@gmail.com"
              :last-changed (org.joda.time.DateTime.)))
           (redirect "/bookmarks"))
         (if-let [bookmark (db/get-bookmark-by-uuid {:uuid uuid})]
-          (do 
+          (do
             (db/update-bookmark! (assoc params
                                    :id (:id bookmark)
                                    :owner "marco.pensallorto@gmail.com"
@@ -140,11 +143,11 @@
   (if-let [errors (validate-class params)]
     (do (log/debug (format "validation errors: %s" errors))
         (-> (redirect "/classes")
-            (assoc :flash 
+            (assoc :flash
               (assoc params :errors errors))))
     (do (if (= uuid "new")
           (do (prn (db/create-class!
-                    (assoc params 
+                    (assoc params
                       :uuid (java.util.UUID/randomUUID)
                       :owner "marco.pensallorto@gmail.com"
                       :last-changed (org.joda.time.DateTime.))))
@@ -159,27 +162,26 @@
 
 (defn confirm-bookmark-deletion [req uuid]
   (if-let [bookmark (db/get-bookmark-by-uuid {:uuid uuid})]
-      (layout/render "confirm-bookmark-deletion.html" 
-                     (select-keys bookmark 
-                                  [:uuid :url :descr :last-changed]))
-      (notfound)))
+    (layout/render "confirm-bookmark-deletion.html"
+                   (select-keys bookmark
+                                [:uuid :url :descr :last-changed]))
+    (notfound)))
 
 (defn delete-bookmark! [req uuid]
   (when-let [bookmark (db/get-bookmark-by-uuid {:uuid uuid})]
-    (db/delete-bookmark! 
+    (db/delete-bookmark!
      (select-keys bookmark [:id]))
     (redirect "/")))
 
 (defn confirm-class-deletion [req uuid]
   (if-let [class (db/get-class-by-uuid {:uuid uuid})]
-      (layout/render "confirm-class-deletion.html" 
-                     (select-keys class 
-                                  [:uuid :label :descr :background :foreground :last-changed]))
-      (notfound)))
+    (layout/render "confirm-class-deletion.html"
+                   (select-keys class
+                                [:uuid :label :descr :background :foreground :last-changed]))
+    (notfound)))
 
 (defn delete-class! [req uuid]
   (when-let [class (db/get-class-by-uuid {:uuid uuid})]
-    (db/delete-class! 
+    (db/delete-class!
      (select-keys class [:id]))
     (redirect "/classes")))
-
