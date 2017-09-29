@@ -58,27 +58,27 @@
   (layout/render
    "home.html"
    (merge {:bookmarks (db/user-bookmarks
-                       {:owner "marco.pensallorto@gmail.com"})})))
+                       {:owner "not.me@yahoo.jp"})})))
 
 (defn bookmarks-page [{:keys [flash]}]
   (layout/render
    "bookmarks.html"
    (merge {:bookmarks (db/user-bookmarks
-                       {:owner "marco.pensallorto@gmail.com"})}
+                       {:owner "not.me@yahoo.jp"})}
           (select-keys flash [:name :message :errors]))))
 
 (defn classes-page [{:keys [flash]}]
   (layout/render
    "classes.html"
    (merge {:classes (db/user-classes
-                     {:owner "marco.pensallorto@gmail.com"})}
+                     {:owner "not.me@yahoo.jp"})}
           (select-keys flash [:name :message :errors]))))
 
 (defn members-page [{:keys [flash]}]
   (layout/render
    "class-members.html"
    (merge {:members (db/get-bookmarks-by-class
-                     {:owner "marco.pensallorto@gmail.com"})}
+                     {:owner "not.me@yahoo.jp"})}
           (select-keys flash [:name :message :errors]))))
 
 (defn alter-members! [{:keys [params]} uuid]
@@ -125,14 +125,14 @@
           (db/create-bookmark!
            (assoc params
              :uuid (java.util.UUID/randomUUID)
-             :owner "marco.pensallorto@gmail.com"
+             :owner "not.me@yahoo.jp"
              :last-changed (org.joda.time.DateTime.)))
           (redirect "/bookmarks"))
         (if-let [bookmark (db/get-bookmark-by-uuid {:uuid uuid})]
           (do
             (db/update-bookmark! (assoc params
                                    :id (:id bookmark)
-                                   :owner "marco.pensallorto@gmail.com"
+                                   :owner "not.me@yahoo.jp"
                                    :last-changed (org.joda.time.DateTime.)))
             (redirect "/bookmarks"))
           (notfound))))))
@@ -149,12 +149,12 @@
           (do (prn (db/create-class!
                     (assoc params
                       :uuid (java.util.UUID/randomUUID)
-                      :owner "marco.pensallorto@gmail.com"
+                      :owner "not.me@yahoo.jp"
                       :last-changed (org.joda.time.DateTime.))))
               (prn "Thomas"))
           (if-let [class (db/get-class-by-uuid {:uuid uuid})]
             (do (db/update-class! (assoc params
-                                    :owner "marco.pensallorto@gmail.com"
+                                    :owner "not.me@yahoo.jp"
                                     :last-changed (org.joda.time.DateTime.)))
                 (print "Thomas")
                 (redirect "/classes"))
