@@ -2,6 +2,7 @@ CREATE TABLE classes
 (id INTEGER PRIMARY KEY AUTO_INCREMENT,
  uuid UUID,
  owner VARCHAR(30),
+ label VARCHAR(30),
  descr VARCHAR(2048),
  background CHAR(6),
  foreground CHAR(6),

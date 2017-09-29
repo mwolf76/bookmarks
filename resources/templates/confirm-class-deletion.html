@@ -1,0 +1,64 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="row">
+  <div class="span12">
+    <form method="POST" action="#">
+      {% csrf-field %}
+      <p>
+        Label
+        <input class="form-control"
+                 type="text"
+                 name="label"
+                 value="{{label}}" />
+      </p>
+      {% if errors.label %}
+      <div class="alert alert-danger">{{errors.label|join}}</div>
+      {% endif %}
+
+      <p>
+        Description
+        <textarea class="form-control"
+                  rows="20"
+                  cols="50"
+                  name="descr">{{descr}}</textarea>
+      </p>
+      {% if errors.descr %}
+      <div class="alert alert-danger">{{errors.descr|join}}</div>
+      {% endif %}
+
+      <p>
+        Background
+        <input class="form-control"
+                 type="text"
+                 name="background"
+                 value="{{background}}" />
+      </p>
+      {% if errors.background %}
+      <div class="alert alert-danger">{{errors.background|join}}</div>
+      {% endif %}
+
+      <p>
+        Foreground
+        <input class="form-control"
+                 type="text"
+                 name="foreground"
+                 value="{{foreground}}" />
+      </p>
+      {% if errors.foreground %}
+      <div class="alert alert-danger">{{errors.foreground|join}}</div>
+      {% endif %}
+
+      <p>
+        Last changed 
+        <time>{{last-changed}}</time>
+      </p>
+      <p> 
+        You are about to delete this entry. This operation can not be
+        undone. Are you sure you want to proceed?
+      </p>
+      <input type="submit" class="btn btn-warning" value="yes" />
+      <a class="btn btn-primary" href="/classes">no</a>
+    </form>
+  </div>
+</div>
+{% endblock %}
