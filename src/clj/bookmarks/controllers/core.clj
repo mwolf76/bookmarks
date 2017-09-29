@@ -116,7 +116,7 @@
   (if-let [errors (validate-bookmark params)]
     (do
       (log/debug (format "validation errors: %s" errors))
-      (-> (redirect "/")
+      (-> (response/found "/")
           (assoc :flash
             (assoc params :errors errors))))
     (do
@@ -127,14 +127,14 @@
              :uuid (java.util.UUID/randomUUID)
              :owner "not.me@yahoo.jp"
              :last-changed (org.joda.time.DateTime.)))
-          (redirect "/bookmarks"))
+          (response/found "/bookmarks"))
         (if-let [bookmark (db/get-bookmark-by-uuid {:uuid uuid})]
           (do
             (db/update-bookmark! (assoc params
                                    :id (:id bookmark)
                                    :owner "not.me@yahoo.jp"
                                    :last-changed (org.joda.time.DateTime.)))
-            (redirect "/bookmarks"))
+            (response/found "/bookmarks"))
           (notfound))))))
 
 (defn save-class! [{:keys [params]} uuid]
@@ -142,7 +142,7 @@
   (log-data params)
   (if-let [errors (validate-class params)]
     (do (log/debug (format "validation errors: %s" errors))
-        (-> (redirect "/classes")
+        (-> (response/found "/classes")
             (assoc :flash
               (assoc params :errors errors))))
     (do (if (= uuid "new")
@@ -157,7 +157,7 @@
                                     :owner "not.me@yahoo.jp"
                                     :last-changed (org.joda.time.DateTime.)))
                 (print "Thomas")
-                (redirect "/classes"))
+                (response/found "/classes"))
             (notfound))))))
 
 (defn confirm-bookmark-deletion [req uuid]
@@ -171,7 +171,7 @@
   (when-let [bookmark (db/get-bookmark-by-uuid {:uuid uuid})]
     (db/delete-bookmark!
      (select-keys bookmark [:id]))
-    (redirect "/")))
+    (response/found "/")))
 
 (defn confirm-class-deletion [req uuid]
   (if-let [class (db/get-class-by-uuid {:uuid uuid})]
@@ -184,4 +184,4 @@
   (when-let [class (db/get-class-by-uuid {:uuid uuid})]
     (db/delete-class!
      (select-keys class [:id]))
-    (redirect "/classes")))
+    (response/found "/classes")))
