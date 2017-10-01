@@ -13,3 +13,5 @@
      (every? valid-color-digit?
              (clojure.string/upper-case s)))))
 
+
+

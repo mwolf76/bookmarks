@@ -8,20 +8,28 @@
             [bookmarks.db.core :as db]
             [struct.core :as st]))
 
-;; the point of lisp is that the language allows you to build a dsl,
-;; suiting better than ony language can, the problem at hand.
-(defmacro log-uuid [& body]
-  `(log/debug "uuid: " ~@body))
+(defn class-uuid?
+  [uuid]
+  (log/debug (format "Validating class uuid %s" uuid))
+  (db/get-class-by-uuid {:uuid uuid}))
 
-(defmacro log-data [& body]
-  `(log/debug "data: " ~@body))
+(defn vector-of-class-uuids? 
+  [in]
+  (let [v (into [] (flatten (vector in)))]
+    (every? class-uuid? v)))
 
-(defmacro notfound []
-  `response/not-found)
+(def vector-of-class-uuids
+  {:message "must be a vector instance"
+   :optional true
+   :validate vector-of-class-uuids?})
 
 ;; validation schemas
 (def bookmark-schema
-  [[:url
+  [[:class-uuids
+    st/required
+    vector-of-class-uuids] 
+
+   [:url
     st/required
     st/string]
 
@@ -32,24 +40,18 @@
      :validate #(> (count %) 9)}]])
 
 (defn validate-bookmark[params]
+  (log/debug (format "Validating bookmark %s" params))
   (first (st/validate params bookmark-schema)))
 
 (def class-schema
-  [[:descr
+  [[:label
     st/required
     st/string]
-
-   [:background
+    
+   [:descr
     st/required
-    st/string
-    {:descr "background must be a valid HTML color"
-     :validate util/valid-color-string?}]
-
-   [:foreground
-    st/required
-    st/string
-    {:descr "foreground must be a valid HTML color"
-     :validate util/valid-color-string?}]])
+    st/string]
+   ])
 
 (defn validate-class[params]
   (first (st/validate params class-schema)))
@@ -88,84 +90,121 @@
   (layout/render "about.html"))
 
 (defn edit-bookmark [{flash :flash} uuid]
-  (log/debug uuid)
-  (log/debug flash)
-  (if (= "new" uuid)
-    (layout/render "bookmark.html" {})
-    (if-let [bookmark (db/get-bookmark-by-uuid {:uuid uuid})]
-      (layout/render "bookmark.html"
-                     (merge
-                      (select-keys bookmark [:uuid :url :descr :last-changed])
-                      (select-keys flash [:name :message :errors])))
-      (notfound))))
+  (let [user-classes (db/user-classes {:owner "not.me@yahoo.jp"})]
+
+    (if (= "new" uuid)
+      ;; creating a new bookmark record
+      (layout/render "bookmark.html" 
+                     (merge {:uuid "new" :classes user-classes}
+                            (select-keys flash [:name :message :errors])))
+      
+      ;; updating an existing bookmark record
+      (if-let [bookmark (db/get-bookmark-by-uuid {:uuid uuid})]
+        (let [bookmark-id (:id bookmark)
+              selected #(if (some #{(:id %)} (map :id (db/get-bookmark-classes {:bookmark-id bookmark-id}))) (assoc % :selected true) %)]
+          (layout/render "bookmark.html"
+                         (merge {:classes (map selected user-classes)}
+                                (select-keys bookmark [:uuid :url :descr :last-changed])
+                                (select-keys flash [:name :message :errors]))))
+        (response/not-found)))))
 
 (defn edit-class [{flash :flash} uuid]
-  (log-uuid uuid)
-  (log-data flash)
   (if (= "new" uuid)
-    (layout/render "class.html" {})
+    ;; creating a new class record
+    (layout/render "class.html" {:uuid "new"})
+    
+    ;; updating an existing class record
     (if-let [class (db/get-class-by-uuid {:uuid uuid})]
       (layout/render "class.html"
                      (merge
-                      (select-keys class [:uuid :url :descr :last-changed])
+                      (select-keys class [:uuid :url :label :descr :last-changed])
                       (select-keys flash [:name :message :errors])))
-      (notfound))))
+      
+      (response/not-found))))
 
 (defn save-bookmark! [{:keys [params]} uuid]
-  (log/debug (format "save-bookmark! %s" params))
   (if-let [errors (validate-bookmark params)]
-    (do
-      (log/debug (format "validation errors: %s" errors))
-      (-> (response/found "/")
-          (assoc :flash
-            (assoc params :errors errors))))
-    (do
-      (if (= uuid "new")
-        (do
-          (db/create-bookmark!
-           (assoc params
-             :uuid (java.util.UUID/randomUUID)
-             :owner "not.me@yahoo.jp"
-             :last-changed (org.joda.time.DateTime.)))
-          (response/found "/bookmarks"))
-        (if-let [bookmark (db/get-bookmark-by-uuid {:uuid uuid})]
-          (do
-            (db/update-bookmark! (assoc params
-                                   :id (:id bookmark)
-                                   :owner "not.me@yahoo.jp"
-                                   :last-changed (org.joda.time.DateTime.)))
-            (response/found "/bookmarks"))
-          (notfound))))))
+    (do (log/debug (format "validation errors: %s" errors))
+        (-> (response/found "edit")
+            (assoc :flash (assoc params :errors errors))))
+
+    ;; no validation errors
+    (do (if (= uuid "new")
+          ;; create a new record
+          (let [bookmark-id (first (vals (db/create-bookmark!
+                                          (assoc params
+                                            :uuid (java.util.UUID/randomUUID)
+                                            :owner "not.me@yahoo.jp"
+                                            :last-changed (org.joda.time.DateTime.)))))]
+            (log/debug (format "Created a new bookmark record (id = %d)" bookmark-id))
+
+            ;; build initial bookmark-class associations
+            (doseq [class (map #(db/get-class-by-uuid {:uuid %}) 
+                               (into [] (flatten (vector (:class-uuids params)))))]
+              (let [class-id (:id class)]
+                (log/debug (format "Created bookmark-class association %d --> %d"
+                                   bookmark-id class-id))
+                (db/create-bookmark-class! {:bookmark-id bookmark-id :class-id class-id}))))
+
+          ;; update an existing bookmark record
+          (if-let [bookmark (db/get-bookmark-by-uuid {:uuid uuid})]
+            
+            (let [bookmark-id (:id bookmark)]
+              (db/update-bookmark! (assoc params
+                                     :id (:id bookmark)
+                                     :owner "not.me@yahoo.jp"
+                                     :last-changed (org.joda.time.DateTime.)))
+              
+              ;; rewrite bookmark-class associations
+              (log/debug (format "Clearing bookmark-class associations for bookmark (id = %d)" bookmark-id))
+              (db/clear-bookmark-classes! {:bookmark-id bookmark-id})
+              (doseq [class (map #(db/get-class-by-uuid {:uuid %}) 
+                                 (into [] (flatten (vector (:class-uuids params)))))]
+                (let [class-id (:id class)]
+                  (log/debug (format "Created bookmark-class association %d --> %d"
+                                     bookmark-id class-id))
+                  (db/create-bookmark-class! 
+                   {:bookmark-id bookmark-id :class-id class-id}))))
+            
+            (response/not-found)))
+    
+        (response/found "/bookmarks"))))
 
 (defn save-class! [{:keys [params]} uuid]
-  (log-uuid uuid)
-  (log-data params)
   (if-let [errors (validate-class params)]
     (do (log/debug (format "validation errors: %s" errors))
-        (-> (response/found "/classes")
-            (assoc :flash
-              (assoc params :errors errors))))
+        (-> (response/found "edit")
+            (assoc :flash (assoc params :errors errors))))
+  
+    ;; no validation errors
     (do (if (= uuid "new")
-          (do (prn (db/create-class!
-                    (assoc params
-                      :uuid (java.util.UUID/randomUUID)
-                      :owner "not.me@yahoo.jp"
-                      :last-changed (org.joda.time.DateTime.))))
-              (prn "Thomas"))
+          ;; create a new record
+          (let [class-id (first (vals (db/create-class!
+                                       (assoc params
+                                         :uuid (java.util.UUID/randomUUID)
+                                         :owner "not.me@yahoo.jp"
+                                         :last-changed (org.joda.time.DateTime.)))))]
+            (log/debug (format "Created a new class record (id = %d)" class-id)))
+          
+          ;; update an existing record
           (if-let [class (db/get-class-by-uuid {:uuid uuid})]
-            (do (db/update-class! (assoc params
-                                    :owner "not.me@yahoo.jp"
-                                    :last-changed (org.joda.time.DateTime.)))
-                (print "Thomas")
-                (response/found "/classes"))
-            (notfound))))))
+            (let [class-id (:id class)]
+              (db/update-class! (assoc params
+                                  :id class-id
+                                  :owner "not.me@yahoo.jp"
+                                  :last-changed (org.joda.time.DateTime.)))
+              (log/debug (format "Upated class record (id = %d)" (class-id))))
+            
+            (response/not-found)))
+
+        (response/found "/classes"))))
 
 (defn confirm-bookmark-deletion [req uuid]
   (if-let [bookmark (db/get-bookmark-by-uuid {:uuid uuid})]
     (layout/render "confirm-bookmark-deletion.html"
                    (select-keys bookmark
                                 [:uuid :url :descr :last-changed]))
-    (notfound)))
+    (response/not-found)))
 
 (defn delete-bookmark! [req uuid]
   (when-let [bookmark (db/get-bookmark-by-uuid {:uuid uuid})]
@@ -178,10 +217,11 @@
     (layout/render "confirm-class-deletion.html"
                    (select-keys class
                                 [:uuid :label :descr :background :foreground :last-changed]))
-    (notfound)))
+    (response/not-found)))
 
 (defn delete-class! [req uuid]
   (when-let [class (db/get-class-by-uuid {:uuid uuid})]
     (db/delete-class!
      (select-keys class [:id]))
     (response/found "/classes")))
+

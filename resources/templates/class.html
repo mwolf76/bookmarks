@@ -2,7 +2,7 @@
 {% block content %}
 <div class="row">
   <div class="span12">
-    <form method="POST" action="#">
+    <form method="POST" action="/class/{{uuid}}/save">
       {% csrf-field %}
       <p>
         Label
@@ -24,28 +24,6 @@
       </p>
       {% if errors.descr %}
       <div class="alert alert-danger">{{errors.descr|join}}</div>
-      {% endif %}
-
-      <p>
-        Background
-        <input class="form-control"
-                 type="text"
-                 name="background"
-                 value="{{background}}" />
-      </p>
-      {% if errors.background %}
-      <div class="alert alert-danger">{{errors.background|join}}</div>
-      {% endif %}
-
-      <p>
-        Foreground
-        <input class="form-control"
-                 type="text"
-                 name="foreground"
-                 value="{{foreground}}" />
-      </p>
-      {% if errors.foreground %}
-      <div class="alert alert-danger">{{errors.foreground|join}}</div>
       {% endif %}
 
       <p>

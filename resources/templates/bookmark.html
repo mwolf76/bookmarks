@@ -1,9 +1,20 @@
-{% extends "base.html" %}
+{% extends "edit.html" %}
 {% block content %}
 <div class="row">
   <div class="span12">
-    <form method="POST" action="#">
+    <form method="POST" action="/bookmark/{{uuid}}/save">
       {% csrf-field %}
+      <p>
+        Classes
+        <select name="class-uuids" multiple title="Pick classes..." class="selectpicker show-tick" >
+          {% for class in classes %}<option value="{{class.uuid}}" data-content="<span class='label' style='background-color: #eee; color: #222'>{{class.label}}</span>"{% if class.selected %}selected{%endif%}>{{class.label}}</option>
+          {% endfor %}
+        </select>
+      </p>
+      {% if errors.class-uuids %}
+      <div class="alert alert-danger">{{errors.class-uuids|join}}</div>
+      {% endif %}
+      
       <p>
         URL
         <input class="form-control"
@@ -11,9 +22,10 @@
                  name="url"
                  value="{{url}}" />
       </p>
-      {% if errors.name %}
-      <div class="alert alert-danger">{{errors.name|join}}</div>
+      {% if errors.url %}
+      <div class="alert alert-danger">{{errors.url|join}}</div>
       {% endif %}
+      
       <p>
         Description
         <textarea class="form-control"
@@ -21,13 +33,15 @@
                   cols="50"
                   name="descr">{{descr}}</textarea>
       </p>
+      {% if errors.descr %}
+      <div class="alert alert-danger">{{errors.descr|join}}</div>
+      {% endif %}
+      
       <p>
         Last changed 
         <time>{{last-changed}}</time>
       </p>
-      {% if errors.message %}
-      <div class="alert alert-danger">{{errors.message|join}}</div>
-      {% endif %}
+      
       <a class="btn btn-primary" href="/bookmarks">&laquo; back to list</a>
       <input type="submit" class="btn btn-primary" value="save" />
     </form>

@@ -1,26 +1,31 @@
--- :name create-user! :! :n
+-- :name create-user! :i!
 -- :doc Creates a new user record. Requires :id, :first-name, :last-name, :is-active.
 INSERT INTO users
 (id, first_name, last_name, is_active)
 VALUES (:id, :first-name, :last-name, :is-active)
 
--- :name create-bookmark! :! :n
+-- :name create-bookmark! :i!
 -- :doc Creates a new bookmark record. Requires :uuid, :url, :owner, :descr, :last-changed.
 INSERT INTO bookmarks
 (uuid, url, owner, descr, last_changed)
 VALUES (:uuid, :url, :owner, :descr, :last-changed)
 
--- :name create-class! :! :n
--- :doc Creates a new class record. Requires :uuid, :owner, :label, :descr, :background, :foreground, :last-changed.
+-- :name create-class! :i!
+-- :doc Creates a new class record. Requires :uuid, :owner, :label, :descr, :last-changed.
 INSERT INTO classes
-(uuid, owner, label, descr, background, foreground, last_changed)
-VALUES (:uuid, :owner, :label, :descr, :background, :foreground, :last-changed)
+(uuid, owner, label, descr, last_changed)
+VALUES (:uuid, :owner, :label, :descr, :last-changed)
 
 -- :name create-bookmark-class! :! :n
 -- :doc Creates a new bookmark-class association. Requires :bookmark_id, :class_id.
 INSERT INTO bookmarks_classes
 (bookmark_id, class_id)
 VALUES (:bookmark-id, :class-id)
+
+-- :name clear-bookmark-classes! :! :n
+-- :doc Deletes all class associations to given bookmark. Requires :bookmark_id.
+DELETE FROM bookmarks_classes
+WHERE bookmark_id = :bookmark-id
 
 -- :name get-bookmarks-by-class :? :*
 -- :doc Retrieves all bookmarks associated with given class. Requires :class-id.
@@ -30,7 +35,7 @@ WHERE id = bookmark_id and class_id = :class-id;
 
 -- :name get-bookmark-classes :? :*
 -- :doc Retrieves all the classes the given bookmark belongs to. Requires :bookmark-id.
-SELECT id, uuid, owner, descr, background, foreground, last_changed
+SELECT id, uuid, owner, descr, last_changed
 FROM bookmarks_classes JOIN classes
 WHERE id = class_id AND bookmark_id = :bookmark-id;
 
@@ -59,15 +64,15 @@ SET uuid = :uuid, url = :url, owner = :owner, descr = :descr, last_changed = :la
 WHERE id = :id
 
 -- :name update-class! :! :n
--- :doc Updates an existing class record. Requires :id, :owner, :label, :descr, :background, :foreground, :last-changed.
+-- :doc Updates an existing class record. Requires :id, :owner, :label, :descr, :last-changed.
 UPDATE classes
-SET owner = :owner, label = :label, descr = :descr, background = :background, foreground = :foreground, last_changed = :last-changed
+SET owner = :owner, label = :label, descr = :descr, last_changed = :last-changed
 WHERE id = :id
 
 -- :name update-class-all! :! :n
--- :doc Updates an existing class record rewriting all fields. Requires :id, :uuid, :owner, :label, :descr, :background, :foregound, :last-changed.
+-- :doc Updates an existing class record rewriting all fields. Requires :id, :uuid, :owner, :label, :descr, :last-changed.
 UPDATE classes
-SET uuid = :uuid, owner = :owner, label = :label, descr = :descr, background = :background, foreground = :foreground, last_changed = :last-changed
+SET uuid = :uuid, owner = :owner, label = :label, descr = :descr, last_changed = :last-changed
 WHERE id = :id
 
 -- :name all-users :? :*
