@@ -3,7 +3,8 @@ CREATE TABLE classes
  uuid UUID,
  owner VARCHAR(30),
  label VARCHAR(30),
- descr VARCHAR(2048),
+ foreground CHAR(7),
+ background CHAR(7),
  last_changed TIMESTAMP);
 
 CREATE TABLE bookmarks_classes

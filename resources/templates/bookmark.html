@@ -5,8 +5,8 @@
     <form method="POST" action="/bookmark/{{uuid}}/save">
       {% csrf-field %}
       <p>
-        Classes
-        <select name="class-uuids" multiple title="Pick classes..." class="selectpicker show-tick" >
+        <h5>Classes</h5>
+        <select name="class-uuids" multiple title="Pick classes..." class="selectpicker show-tick" data-width="100%">
           {% for class in classes %}<option value="{{class.uuid}}" data-content="<span class='label' style='background-color: #eee; color: #222'>{{class.label}}</span>"{% if class.selected %}selected{%endif%}>{{class.label}}</option>
           {% endfor %}
         </select>
@@ -16,7 +16,7 @@
       {% endif %}
       
       <p>
-        URL
+        <h5>URL</h5>
         <input class="form-control"
                  type="text"
                  name="url"
@@ -27,7 +27,7 @@
       {% endif %}
       
       <p>
-        Description
+        <h5>Description</h5>
         <textarea class="form-control"
                   rows="20"
                   cols="50"
@@ -37,13 +37,17 @@
       <div class="alert alert-danger">{{errors.descr|join}}</div>
       {% endif %}
       
+      {% if {{last-changed}} %}
       <p>
-        Last changed 
+        <h5>Last changed</h5>
         <time>{{last-changed}}</time>
       </p>
-      
-      <a class="btn btn-primary" href="/bookmarks">&laquo; back to list</a>
-      <input type="submit" class="btn btn-primary" value="save" />
+      {% endif %}
+      <br/>
+      <br/>
+      <div class="centered">
+        <input type="submit" class="btn btn-primary" value="save" />
+      </div>
     </form>
   </div>
 </div>

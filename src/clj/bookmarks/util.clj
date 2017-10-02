@@ -1,4 +1,5 @@
-(ns bookmarks.util)
+(ns bookmarks.util
+  (:require [clojure.tools.logging :as log]))
 
 (defn valid-color-string?
   [s]
@@ -9,9 +10,10 @@
              (and (<= 48 tmp) (<= tmp 57))
              (and (<= 65 tmp) (<= tmp 70)))))]
     (and 
-     (= 6 (count s))
-     (every? valid-color-digit?
-             (clojure.string/upper-case s)))))
+     (= 7 (count s))
+     (= \# (first s)))
+    (every? valid-color-digit?
+            (clojure.string/upper-case (subs s 1)))))
 
 
 

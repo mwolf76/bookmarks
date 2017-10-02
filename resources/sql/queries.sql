@@ -11,10 +11,10 @@ INSERT INTO bookmarks
 VALUES (:uuid, :url, :owner, :descr, :last-changed)
 
 -- :name create-class! :i!
--- :doc Creates a new class record. Requires :uuid, :owner, :label, :descr, :last-changed.
+-- :doc Creates a new class record. Requires :uuid, :owner, :label, :foreground, :background, :last-changed.
 INSERT INTO classes
-(uuid, owner, label, descr, last_changed)
-VALUES (:uuid, :owner, :label, :descr, :last-changed)
+(uuid, owner, label, foreground, background, last_changed)
+VALUES (:uuid, :owner, :label, :foreground, :background, :last-changed)
 
 -- :name create-bookmark-class! :! :n
 -- :doc Creates a new bookmark-class association. Requires :bookmark_id, :class_id.
@@ -35,7 +35,7 @@ WHERE id = bookmark_id and class_id = :class-id;
 
 -- :name get-bookmark-classes :? :*
 -- :doc Retrieves all the classes the given bookmark belongs to. Requires :bookmark-id.
-SELECT id, uuid, owner, descr, last_changed
+SELECT id, uuid, owner, foreground, background, last_changed
 FROM bookmarks_classes JOIN classes
 WHERE id = class_id AND bookmark_id = :bookmark-id;
 
@@ -64,9 +64,9 @@ SET uuid = :uuid, url = :url, owner = :owner, descr = :descr, last_changed = :la
 WHERE id = :id
 
 -- :name update-class! :! :n
--- :doc Updates an existing class record. Requires :id, :owner, :label, :descr, :last-changed.
+-- :doc Updates an existing class record. Requires :id, :owner, :label, :foreground, :background, :last-changed.
 UPDATE classes
-SET owner = :owner, label = :label, descr = :descr, last_changed = :last-changed
+SET owner = :owner, label = :label, foreground = :foreground, background = :background, last_changed = :last-changed
 WHERE id = :id
 
 -- :name update-class-all! :! :n

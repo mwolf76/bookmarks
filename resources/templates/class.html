@@ -1,38 +1,67 @@
-{% extends "base.html" %}
+{% extends "edit.html" %}
 {% block content %}
 <div class="row">
   <div class="span12">
     <form method="POST" action="/class/{{uuid}}/save">
       {% csrf-field %}
       <p>
-        Label
-        <input class="form-control"
-                 type="text"
-                 name="label"
-                 value="{{label}}" />
+        <h5>Label</h5>
+        <input id="label" name="label"
+               class="form-control" type="text"  value="{{label}}" />
       </p>
       {% if errors.label %}
       <div class="alert alert-danger">{{errors.label|join}}</div>
       {% endif %}
 
       <p>
-        Description
-        <textarea class="form-control"
-                  rows="20"
-                  cols="50"
-                  name="descr">{{descr}}</textarea>
+        <h5>Foreground</h5>
+        <div id="cp-foreground" class="input-group colorpicker-component"> 
+          <input type="text" name="foreground" class="form-control" /> 
+          <span class="input-group-addon"><i></i></span>
+        </div> 
+        <script>$(function() { $('#cp-foreground').colorpicker(); });</script>
       </p>
-      {% if errors.descr %}
-      <div class="alert alert-danger">{{errors.descr|join}}</div>
+      {% if errors.foreground %}
+      <div class="alert alert-danger">{{errors.foreground|join}}</div>
+      {% endif %}
+      
+      <p>
+        <h5>Background</h5>
+        <div id="cp-background" class="input-group colorpicker-component"> 
+          <input type="text" name="background" value="" class="form-control" /> 
+          <span class="input-group-addon"><i></i></span>
+        </div> 
+        <script>$(function() { $('#cp-background').colorpicker(); });</script>
+      </p>
+      {% if errors.background %}
+      <div class="alert alert-danger">{{errors.background|join}}</div>
       {% endif %}
 
       <p>
-        Last changed 
-        <time>{{last-changed}}</time>
+        <h5>Preview</h5>
+        <div id="label-preview" class="input-group"> 
+          <input id="preview" type="text" value="Thomas" 
+                 class="form-control" readonly 
+                 style="background-color: #dd2; color: #22F"/> 
+        </div> 
       </p>
-      <a class="btn btn-primary" href="/classes">&laquo; back to list</a>
-      <input type="submit" class="btn btn-primary" value="save" />
+
+      {% if {{last-changed}} %}
+      <p>
+        <h5>Last changed: <time>{{last-changed}}</time></h5>
+      </p>
+      {% endif %}
+      <br/>
+      <br/>
+      <div class="centered">
+        <input type="submit" class="btn btn-primary" value="save" />
+      </div>
     </form>
   </div>
 </div>
+{% endblock %}
+
+{% block page-scripts %}
+    {% script "/js/bootstrap-colorpicker.js" %}
+    {% script "/js/class.js" %}
 {% endblock %}

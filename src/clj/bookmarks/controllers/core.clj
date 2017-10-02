@@ -48,19 +48,28 @@
     st/required
     st/string]
     
-   [:descr
+   [:foreground
     st/required
-    st/string]
+    st/string
+    {:descr "foreground must be a valid HTML hexadecimal color string (e.g. #FEFEFE)" 
+     :validate util/valid-color-string?}]
+
+   [:background
+    st/required
+    st/string
+    {:descr "background must be a valid HTML hexadecimal color string (e.g. #FEFEFE)" 
+     :validate util/valid-color-string?}]
    ])
 
 (defn validate-class[params]
   (first (st/validate params class-schema)))
 
 (defn home-page [req]
-  (layout/render
-   "home.html"
-   (merge {:bookmarks (db/user-bookmarks
-                       {:owner "not.me@yahoo.jp"})})))
+  (let [owner "not.me@yahoo.jp"]
+    (layout/render
+     "home.html"
+     (merge {:classes (db/user-classes {:owner owner})
+             :bookmarks (db/user-bookmarks {:owner owner})}))))
 
 (defn bookmarks-page [{:keys [flash]}]
   (layout/render
@@ -95,28 +104,30 @@
     (if (= "new" uuid)
       ;; creating a new bookmark record
       (layout/render "bookmark.html" 
-                     (merge {:uuid "new" :classes user-classes}
-                            (select-keys flash [:name :message :errors])))
+                     (merge {:uuid "new" :classes user-classes :back "bookmarks"}
+                            (select-keys flash [:errors])))
       
       ;; updating an existing bookmark record
       (if-let [bookmark (db/get-bookmark-by-uuid {:uuid uuid})]
         (let [bookmark-id (:id bookmark)
               selected #(if (some #{(:id %)} (map :id (db/get-bookmark-classes {:bookmark-id bookmark-id}))) (assoc % :selected true) %)]
           (layout/render "bookmark.html"
-                         (merge {:classes (map selected user-classes)}
+                         (merge {:classes (map selected user-classes) :back "bookmarks"}
                                 (select-keys bookmark [:uuid :url :descr :last-changed])
-                                (select-keys flash [:name :message :errors]))))
+                                (select-keys flash [:errors]))))
         (response/not-found)))))
 
 (defn edit-class [{flash :flash} uuid]
   (if (= "new" uuid)
     ;; creating a new class record
-    (layout/render "class.html" {:uuid "new"})
+    (layout/render "class.html" 
+                   (merge {:uuid "new" :back "classes"}
+                          (select-keys flash [:label :foreground :background :errors])))
     
     ;; updating an existing class record
     (if-let [class (db/get-class-by-uuid {:uuid uuid})]
       (layout/render "class.html"
-                     (merge
+                     (merge {:back "classes"}
                       (select-keys class [:uuid :url :label :descr :last-changed])
                       (select-keys flash [:name :message :errors])))
       
@@ -126,7 +137,8 @@
   (if-let [errors (validate-bookmark params)]
     (do (log/debug (format "validation errors: %s" errors))
         (-> (response/found "edit")
-            (assoc :flash (assoc params :errors errors))))
+            (assoc :flash 
+              (assoc params :errors errors))))
 
     ;; no validation errors
     (do (if (= uuid "new")
@@ -156,7 +168,8 @@
                                      :last-changed (org.joda.time.DateTime.)))
               
               ;; rewrite bookmark-class associations
-              (log/debug (format "Clearing bookmark-class associations for bookmark (id = %d)" bookmark-id))
+              (log/debug (format "Clearing bookmark-class associations for bookmark (id = %d)" 
+                                 bookmark-id))
               (db/clear-bookmark-classes! {:bookmark-id bookmark-id})
               (doseq [class (map #(db/get-class-by-uuid {:uuid %}) 
                                  (into [] (flatten (vector (:class-uuids params)))))]
@@ -171,10 +184,12 @@
         (response/found "/bookmarks"))))
 
 (defn save-class! [{:keys [params]} uuid]
+  (log/debug params)
   (if-let [errors (validate-class params)]
     (do (log/debug (format "validation errors: %s" errors))
         (-> (response/found "edit")
-            (assoc :flash (assoc params :errors errors))))
+            (assoc :flash 
+              (assoc params :errors errors))))
   
     ;; no validation errors
     (do (if (= uuid "new")

@@ -66,3 +66,34 @@ form, .error {
     background: white;
 }
 
+#new a {
+    display: block;
+    margin: auto;
+    width: 140px;
+}
+
+div.centered {
+    display: block;
+    width: 80px;
+    margin: auto;
+}
+
+#warning-clojure {
+    display: block;
+    float: left;
+    margin-right: 8px;
+    width: 90px;
+}
+    
+span i.sample {
+    width: 28px;
+    height: 28px;
+    position: absolute;
+    display: inline-block;
+    cursor: pointer;
+    vertical-align: middle;
+}
+
+
+
+    

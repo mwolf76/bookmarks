@@ -2,13 +2,17 @@
 {% block content %}
 <div class="row">
   <div class="span12">
+    <p>
+      <select name="class-uuids" multiple title="Pick classes..." class="selectpicker show-tick" data-width="100%">
+        {% for class in classes %}<option value="{{class.uuid}}" data-content="<span class='label' style='background-color: #eee; color: #222'>{{class.label}}</span>"{% if class.selected %}selected{%endif%}>{{class.label}}</option>
+        {% endfor %}
+      </select>
+    </p>
+    
     <ul class="bookmarks">
       {% for item in bookmarks %}
       <li>
-        <time>{{item.last-changed|date:"yyyy-MM-dd HH:mm"}}</time>
-        <a href="{{item.url}}" target="#blank">{{item.url}}</a>
-        <a href="/bookmark/{{item.uuid}}">edit</a>
-        <a href="/bookmark/{{item.uuid}}/delete">delete?</a>
+        <a href="{{item.url}}" target="_blank">{{item.url}}</a>
         <p>{{item.descr}}</p>
       </li>
       {% endfor %}
