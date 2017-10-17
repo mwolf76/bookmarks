@@ -64,12 +64,51 @@
 (defn validate-class[params]
   (first (st/validate params class-schema)))
 
-(defn home-page [req]
-  (let [owner "not.me@yahoo.jp"]
+(defn home-page [{:keys [params]}]
+  (let [owner "not.me@yahoo.jp"
+        classes (db/user-classes {:owner owner})
+        bookmarks (db/user-bookmarks {:owner owner})
+        
+        bookmark->classes
+        (fn[bookmark]
+          (db/get-bookmark-classes {:bookmark-id (:id bookmark)}))
+
+        labels
+        (:labels params)
+
+        is-class-active?
+        (fn [class]
+          (and 
+           labels
+           (seq
+            (clojure.set/intersection 
+             (into #{} (map #(java.util.UUID/fromString %) 
+                            (clojure.string/split labels #" ")))
+             (into #{} [(:uuid class)])))))
+        
+        is-bookmark-shown?
+        (fn [bookmark]
+          (or 
+           (not labels)
+           (seq
+            (clojure.set/intersection 
+             (into #{} (map #(java.util.UUID/fromString %) 
+                            (clojure.string/split labels #" ")))
+             (into #{} (map :uuid (:classes bookmark)))))))
+
+        augmented-classes
+        (map #(assoc % :selected (is-class-active? %)) classes)
+
+        augmented-bookmarks
+        (map #(assoc % :classes (bookmark->classes %)) bookmarks)
+        ]
+
+    (log/info labels)
+
     (layout/render
      "home.html"
-     (merge {:classes (db/user-classes {:owner owner})
-             :bookmarks (db/user-bookmarks {:owner owner})}))))
+     {:classes augmented-classes
+      :bookmarks (filter is-bookmark-shown? augmented-bookmarks)})))
 
 (defn bookmarks-page [{:keys [flash]}]
   (layout/render
@@ -128,7 +167,7 @@
     (if-let [class (db/get-class-by-uuid {:uuid uuid})]
       (layout/render "class.html"
                      (merge {:back "classes"}
-                      (select-keys class [:uuid :url :label :descr :last-changed])
+                      (select-keys class [:uuid :url :label :foreground :background :last-changed])
                       (select-keys flash [:name :message :errors])))
       
       (response/not-found))))
@@ -208,7 +247,7 @@
                                   :id class-id
                                   :owner "not.me@yahoo.jp"
                                   :last-changed (org.joda.time.DateTime.)))
-              (log/debug (format "Upated class record (id = %d)" (class-id))))
+              (log/debug (format "Upated class record (id = %d)" class-id)))
             
             (response/not-found)))
 
@@ -217,8 +256,9 @@
 (defn confirm-bookmark-deletion [req uuid]
   (if-let [bookmark (db/get-bookmark-by-uuid {:uuid uuid})]
     (layout/render "confirm-bookmark-deletion.html"
-                   (select-keys bookmark
-                                [:uuid :url :descr :last-changed]))
+                   (merge {:back "bookmarks"} 
+                          (select-keys bookmark
+                                       [:uuid :url :descr :last-changed])))
     (response/not-found)))
 
 (defn delete-bookmark! [req uuid]
@@ -230,8 +270,9 @@
 (defn confirm-class-deletion [req uuid]
   (if-let [class (db/get-class-by-uuid {:uuid uuid})]
     (layout/render "confirm-class-deletion.html"
-                   (select-keys class
-                                [:uuid :label :descr :background :foreground :last-changed]))
+                   (merge {:back "classes"}
+                          (select-keys class
+                                       [:uuid :label :descr :background :foreground :last-changed])))
     (response/not-found)))
 
 (defn delete-class! [req uuid]

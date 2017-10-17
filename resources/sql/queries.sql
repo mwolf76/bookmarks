@@ -35,7 +35,7 @@ WHERE id = bookmark_id and class_id = :class-id;
 
 -- :name get-bookmark-classes :? :*
 -- :doc Retrieves all the classes the given bookmark belongs to. Requires :bookmark-id.
-SELECT id, uuid, owner, foreground, background, last_changed
+SELECT id, uuid, label, owner, foreground, background, last_changed
 FROM bookmarks_classes JOIN classes
 WHERE id = class_id AND bookmark_id = :bookmark-id;
 

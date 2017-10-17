@@ -84,7 +84,7 @@ div.centered {
     margin-right: 8px;
     width: 90px;
 }
-    
+
 span i.sample {
     width: 28px;
     height: 28px;
@@ -94,6 +94,9 @@ span i.sample {
     vertical-align: middle;
 }
 
-
-
-    
+.label {
+    font-weight: bold !important;
+    font-size: 12px;
+    padding: 4px;
+    border-radius: 16px;
+}

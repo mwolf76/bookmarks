@@ -1,11 +1,11 @@
-{% extends "base.html" %}
+{% extends "edit.html" %}
 {% block content %}
 <div class="row">
   <div class="span12">
     <form method="POST" action="#">
       {% csrf-field %}
       <p>
-        URL
+        <h5>URL</h5>
         <input class="form-control"
                readonly="true"
                type="text"
@@ -16,7 +16,7 @@
       <div class="alert alert-danger">{{errors.name|join}}</div>
       {% endif %}
       <p>
-        Description
+        <h5>Description</h5>
         <textarea class="form-control"
                   readonly="true"
                   rows="20"
@@ -24,15 +24,18 @@
                   name="descr">{{descr}}</textarea>
       </p>
       <p>
-        Last changed 
+        <h5>Last changed</h5>
         <time>{{last-changed}}</time>
       </p>
+      <br/>
+      <br/>
       <p> 
         You are about to delete this entry. This operation can not be
         undone. Are you sure you want to proceed?
       </p>
-      <input type="submit" class="btn btn-warning" value="yes" />
-      <a class="btn btn-primary" href="/">no</a>
+      <div class="centered">
+        <input type="submit" class="btn btn-danger" value="yes" />
+      </div>
     </form>
   </div>
 </div>
