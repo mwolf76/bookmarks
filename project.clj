@@ -1,7 +1,6 @@
-(defproject bookmarks "0.1.0-SNAPSHOT"
-
-  :description "FIXME: write description"
-  :url "http://example.com/FIXME"
+(defproject bookmarks "0.0.2-SNAPSHOT"
+  :description "Bookmarks is a simple Clojure/Luminus web application designed to make bookmarks management a little easier"
+  :url "https://github.com/mwolf76/bookmarks"
 
   :dependencies [[clj-time "0.14.0"]
                  [com.h2database/h2 "1.4.196"]

@@ -1,6 +1,7 @@
 # bookmarks
 
-generated using Luminus version "2.9.11.89"
+Bookmarks is a simple Clojure/Luminus web application designed to make bookmarks
+management a little easier.
 
 ## Prerequisites
 
