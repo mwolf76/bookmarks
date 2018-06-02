@@ -1,8 +1,8 @@
 -- :name create-bookmark! :i!
--- :doc Creates a new bookmark record. Requires :uuid, :url, :descr, :last-changed.
+-- :doc Creates a new bookmark record. Requires :uuid, :url, :descr, :priority and :last-changed.
 INSERT INTO bookmarks
-(uuid, url, descr, last_changed)
-VALUES (:uuid, :url, :descr, :last-changed)
+(uuid, url, descr, priority, last_changed)
+VALUES (:uuid, :url, :descr, :priority, :last-changed)
 
 -- :name create-class! :i!
 -- :doc Creates a new class record. Requires :uuid, :label, :foreground, :background, :last-changed.
