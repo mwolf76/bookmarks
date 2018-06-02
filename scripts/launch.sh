@@ -11,4 +11,3 @@ echo "using db $DATABASE_URL"
   --volume `pwd`/db:/var/db		\
   --name=bookmarks 			\
 bookmarks:latest
-

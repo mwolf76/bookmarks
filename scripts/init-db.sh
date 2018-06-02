@@ -12,5 +12,3 @@ if [ ! -d "$DATABASE_DIR" ]; then
 else
 	echo "db sub-directory exists. Skipping..."
 fi
-
-

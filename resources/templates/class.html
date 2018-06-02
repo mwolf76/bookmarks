@@ -15,22 +15,22 @@
 
       <p>
         <h5>Foreground</h5>
-        <div id="cp-foreground" class="input-group colorpicker-component"> 
-          <input type="text" name="foreground" value="{{foreground}}" class="form-control" /> 
+        <div id="cp-foreground" class="input-group colorpicker-component">
+          <input type="text" name="foreground" value="{{foreground}}" class="form-control" />
           <span class="input-group-addon"><i></i></span>
-        </div> 
+        </div>
         <script>$(function() { $('#cp-foreground').colorpicker(); });</script>
       </p>
       {% if errors.foreground %}
       <div class="alert alert-danger">{{errors.foreground|join}}</div>
       {% endif %}
-      
+
       <p>
         <h5>Background</h5>
-        <div id="cp-background" class="input-group colorpicker-component"> 
-          <input type="text" name="background" value="{{background}}" class="form-control" /> 
+        <div id="cp-background" class="input-group colorpicker-component">
+          <input type="text" name="background" value="{{background}}" class="form-control" />
           <span class="input-group-addon"><i></i></span>
-        </div> 
+        </div>
         <script>$(function() { $('#cp-background').colorpicker(); });</script>
       </p>
       {% if errors.background %}
@@ -39,11 +39,11 @@
 
       <p>
         <h5>Preview</h5>
-        <div id="label-preview" class="input-group"> 
-          <input id="preview" type="text" value="Thomas" 
-                 class="form-control" readonly 
-                 style="background-color: #dd2; color: #22F"/> 
-        </div> 
+        <div id="label-preview" class="input-group">
+          <input id="preview" type="text" value="Thomas"
+                 class="form-control" readonly
+                 style="background-color: #dd2; color: #22F"/>
+        </div>
       </p>
 
       {% if {{last-changed}} %}

@@ -23,7 +23,7 @@ WHERE bookmark_id = :bookmark-id
 
 -- :name get-bookmarks-by-class :? :*
 -- :doc Retrieves all bookmarks associated with given class. Requires :class-id.
-SELECT id, uuid, url, descr, last_changed 
+SELECT id, uuid, url, descr, last_changed
 FROM bookmarks_classes JOIN bookmarks
 WHERE id = bookmark_id and class_id = :class-id;
 
@@ -82,7 +82,7 @@ WHERE uuid = :uuid
 -- :name class-members :? :*
 -- :doc Retrieves class members for the given id. Requires :id.
 SELECT * FROM bookmarks JOIN classes
-WHERE 
+WHERE
 
 -- :name delete-bookmark! :! :n
 -- :doc Deletes a bookmark given the id. Requires :id.
@@ -93,4 +93,3 @@ WHERE id = :id
 -- :doc Deletes a class given the id. Requires :id.
 DELETE FROM classes
 WHERE id = :id
-

@@ -5,4 +5,3 @@ CREATE TABLE users
  last_name VARCHAR(30),
  last_login TIME,
  is_active BOOLEAN);
- 
