@@ -31,15 +31,14 @@
       <p>
         <h5>Preview</h5>
         <div id="label-preview" class="input-group">
-          <input id="preview" type="text" value="Thomas"
+          <input id="preview" type="text" value="{{label}}"
                  class="form-control" readonly
-                 style="background-color: #dd2; color: #22F"/>
+                 style="background-color: {{background}}; color: {{foreground}}"/>
         </div>
       </p>
 
       <p>
-        <h5>Last changed</h5>
-        <time>{{last-changed}}</time>
+          <h5>Last changed on {{last-changed}}</h5>
       </p>
       <br/>
       <br/>

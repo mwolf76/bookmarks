@@ -19,13 +19,20 @@
         <h5>Description</h5>
         <textarea class="form-control"
                   readonly="true"
-                  rows="20"
+                  rows="2"
                   cols="50"
                   name="descr">{{descr}}</textarea>
       </p>
       <p>
-        <h5>Last changed</h5>
-        <time>{{last-changed}}</time>
+          <h5>Priority</h5>
+          <input class="form-control"
+                 readonly="true"
+                 type="text"
+                 name="priority"
+                 value="{{priority}}" />
+      </p>
+      <p>
+          <h5>Last changed on {{last-changed}}</h5>
       </p>
       <br/>
       <br/>

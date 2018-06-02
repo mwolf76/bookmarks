@@ -7,7 +7,7 @@
       <p>
         <h5>Label</h5>
         <input id="label" name="label"
-               class="form-control" type="text"  value="{{label}}" />
+               class="form-control" type="text" value="{{label}}" />
       </p>
       {% if errors.label %}
       <div class="alert alert-danger">{{errors.label|join}}</div>
@@ -40,9 +40,9 @@
       <p>
         <h5>Preview</h5>
         <div id="label-preview" class="input-group">
-          <input id="preview" type="text" value="Thomas"
+          <input id="preview" type="text" value="{{label}}"
                  class="form-control" readonly
-                 style="background-color: #dd2; color: #22F"/>
+                 style="background-color: {{background}}; color: {{foreground}}"/>
         </div>
       </p>
 

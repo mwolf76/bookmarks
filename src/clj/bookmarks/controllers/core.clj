@@ -132,8 +132,7 @@
 (defn members-page [{:keys [flash]}]
   (layout/render
    "class-members.html"
-   (merge {:members (db/get-bookmarks-by-class
-                     {:owner "not.me@yahoo.jp"})}
+   (merge {:members (db/get-bookmarks-by-class)}
           (select-keys flash [:name :message :errors]))))
 
 (defn alter-members! [{:keys [params]} uuid]
@@ -173,6 +172,9 @@
     ;; creating a new class record
     (layout/render "class.html"
                    (merge {:uuid "new" :back "classes"}
+                          {:label "Default"
+                           :foreground "#000000"
+                           :background "#FFFFFF"}
                           (select-keys flash [:label :foreground
                                               :background :errors])))
 
@@ -201,7 +203,6 @@
                 (first (vals (db/create-bookmark!
                               (assoc params
                                      :uuid (java.util.UUID/randomUUID)
-                                     :owner "not.me@yahoo.jp"
                                      :last-changed (org.joda.time.DateTime.)))))]
             (log/debug (format
                         "Created a new bookmark record (id = %d)" bookmark-id))
@@ -221,7 +222,6 @@
             (let [bookmark-id (:id bookmark)]
               (db/update-bookmark! (assoc params
                                      :id (:id bookmark)
-                                     :owner "not.me@yahoo.jp"
                                      :last-changed (org.joda.time.DateTime.)))
 
               ;; rewrite bookmark-class associations
@@ -251,21 +251,20 @@
     ;; no validation errors
     (do (if (= uuid "new")
           ;; create a new record
-          (let [class-id (first (vals (db/create-class!
-                                       (assoc params
-                                         :uuid (java.util.UUID/randomUUID)
-                                         :owner "not.me@yahoo.jp"
-                                         :last-changed (org.joda.time.DateTime.)))))]
+          (let [class-id
+                (first (vals (db/create-class!
+                              (assoc params
+                                     :uuid (java.util.UUID/randomUUID)
+                                     :last-changed (org.joda.time.DateTime.)))))]
             (log/debug (format "Created a new class record (id = %d)" class-id)))
 
           ;; update an existing record
           (if-let [class (db/get-class-by-uuid {:uuid uuid})]
             (let [class-id (:id class)]
               (db/update-class! (assoc params
-                                  :id class-id
-                                  :owner "not.me@yahoo.jp"
-                                  :last-changed (org.joda.time.DateTime.)))
-              (log/debug (format "Upated class record (id = %d)" class-id)))
+                                       :id class-id
+                                       :last-changed (org.joda.time.DateTime.)))
+              (log/debug (format "Updated class record (id = %d)" class-id)))
 
             (response/not-found)))
 
@@ -276,7 +275,7 @@
     (layout/render "confirm-bookmark-deletion.html"
                    (merge {:back "bookmarks"}
                           (select-keys bookmark
-                                       [:uuid :url :descr :last-changed])))
+                                       [:uuid :url :descr :priority :last-changed])))
     (response/not-found)))
 
 (defn delete-bookmark! [req uuid]
@@ -290,7 +289,8 @@
     (layout/render "confirm-class-deletion.html"
                    (merge {:back "classes"}
                           (select-keys class
-                                       [:uuid :label :descr :background :foreground :last-changed])))
+                                       [:uuid :label :descr
+                                        :background :foreground :last-changed])))
     (response/not-found)))
 
 (defn delete-class! [req uuid]
