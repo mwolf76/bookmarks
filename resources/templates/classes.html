@@ -1,0 +1,20 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="row">
+  <div class="span12">
+    <ul class="classes">
+      {% for item in classes %}
+      <li>
+        <time>{{item.last-changed|date:"yyyy-MM-dd HH:mm"}}</time>
+        <h5 style="border-radius: 4px; padding:10px; background-color: {{item.background}}; color: {{item.foreground}}">{{item.label}}</h5>
+        <a href="/class/{{item.uuid}}/edit">edit</a>
+        <a href="/class/{{item.uuid}}/delete">delete?</a>
+      </li>
+      {% endfor %}
+    </ul>
+    <div id="new">
+      <a href="/class/new/edit" class="btn btn-primary">new class</a>
+    </div>
+  </div>
+</div>
+{% endblock %}

@@ -1,5 +1,6 @@
 FROM java:8-alpine
-MAINTAINER Your Name <you@example.com>
+
+MAINTAINER Marco Pensallorto<marco.pensallorto@gmail.com>
 
 ADD target/uberjar/bookmarks.jar /bookmarks/app.jar
 

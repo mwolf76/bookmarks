@@ -1,0 +1,56 @@
+{% extends "edit.html" %}
+{% block content %}
+<div class="row">
+  <div class="span12">
+    <form method="POST" action="#">
+      {% csrf-field %}
+      <p>
+        <h5>Label</h5>
+        <input class="form-control" readonly
+                 type="text"
+                 name="label"
+                 value="{{label}}" />
+      </p>
+
+      <p>
+        <h5>Foreground</h5>
+        <input class="form-control" readonly
+               type="text"
+               name="foreground"
+               value="{{foreground}}" />
+      </p>
+
+      <p>
+        <h5>Background</h5>
+        <input class="form-control" readonly
+                 type="text"
+                 name="background"
+                 value="{{background}}" />
+      </p>
+
+      <p>
+        <h5>Preview</h5>
+        <div id="label-preview" class="input-group">
+          <input id="preview" type="text" value="{{label}}"
+                 class="form-control" readonly
+                 style="background-color: {{background}}; color: {{foreground}}"/>
+        </div>
+      </p>
+
+      <p>
+          <h5>Last changed on {{last-changed}}</h5>
+      </p>
+      <br/>
+      <br/>
+
+      <p>
+        You are about to delete this entry. This operation can not be
+        undone. Are you sure you want to proceed?
+      </p>
+      <div class="centered">
+        <input type="submit" class="btn btn-danger" value="yes" />
+      </div>
+    </form>
+  </div>
+</div>
+{% endblock %}

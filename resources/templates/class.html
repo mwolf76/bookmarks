@@ -1,0 +1,67 @@
+{% extends "edit.html" %}
+{% block content %}
+<div class="row">
+  <div class="span12">
+    <form method="POST" action="/class/{{uuid}}/save">
+      {% csrf-field %}
+      <p>
+        <h5>Label</h5>
+        <input id="label" name="label"
+               class="form-control" type="text" value="{{label}}" />
+      </p>
+      {% if errors.label %}
+      <div class="alert alert-danger">{{errors.label|join}}</div>
+      {% endif %}
+
+      <p>
+        <h5>Foreground</h5>
+        <div id="cp-foreground" class="input-group colorpicker-component">
+          <input type="text" name="foreground" value="{{foreground}}" class="form-control" />
+          <span class="input-group-addon"><i></i></span>
+        </div>
+        <script>$(function() { $('#cp-foreground').colorpicker(); });</script>
+      </p>
+      {% if errors.foreground %}
+      <div class="alert alert-danger">{{errors.foreground|join}}</div>
+      {% endif %}
+
+      <p>
+        <h5>Background</h5>
+        <div id="cp-background" class="input-group colorpicker-component">
+          <input type="text" name="background" value="{{background}}" class="form-control" />
+          <span class="input-group-addon"><i></i></span>
+        </div>
+        <script>$(function() { $('#cp-background').colorpicker(); });</script>
+      </p>
+      {% if errors.background %}
+      <div class="alert alert-danger">{{errors.background|join}}</div>
+      {% endif %}
+
+      <p>
+        <h5>Preview</h5>
+        <div id="label-preview" class="input-group">
+          <input id="preview" type="text" value="{{label}}"
+                 class="form-control" readonly
+                 style="background-color: {{background}}; color: {{foreground}}"/>
+        </div>
+      </p>
+
+      {% if {{last-changed}} %}
+      <p>
+        <h5>Last changed: <time>{{last-changed}}</time></h5>
+      </p>
+      {% endif %}
+      <br/>
+      <br/>
+      <div class="centered">
+        <input type="submit" class="btn btn-primary" value="save" />
+      </div>
+    </form>
+  </div>
+</div>
+{% endblock %}
+
+{% block page-scripts %}
+    {% script "/js/bootstrap-colorpicker.js" %}
+    {% script "/js/class.js" %}
+{% endblock %}

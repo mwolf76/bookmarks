@@ -1,0 +1,66 @@
+{% extends "edit.html" %}
+
+{% block content %}
+<div class="row">
+  <div class="span12">
+    <form method="POST" action="/bookmark/{{uuid}}/save">
+      {% csrf-field %}
+      <p>
+        <h5>Classes</h5>
+        <select name="class-uuids" multiple title="Pick classes..." class="selectpicker show-tick" data-width="100%">
+          {% for class in classes %}<option value="{{class.uuid}}" data-content="<span class='label' style='background-color: #eee; color: #222'>{{class.label}}</span>"{% if class.selected %}selected{%endif%}>{{class.label}}</option>
+          {% endfor %}
+        </select>
+      </p>
+      {% if errors.class-uuids %}
+      <div class="alert alert-danger">{{errors.class-uuids|join}}</div>
+      {% endif %}
+
+      <p>
+        <h5>URL</h5>
+        <input class="form-control"
+                 type="text"
+                 name="url"
+                 value="{{url}}" />
+      </p>
+      {% if errors.url %}
+      <div class="alert alert-danger">{{errors.url|join}}</div>
+      {% endif %}
+
+      <p>
+        <h5>Description</h5>
+        <textarea class="form-control"
+                  rows="2"
+                  cols="50"
+                  name="descr">{{descr}}</textarea>
+      </p>
+      {% if errors.descr %}
+      <div class="alert alert-danger">{{errors.descr|join}}</div>
+      {% endif %}
+
+      <p>
+          <h5>Priority</h5>
+          <input class="form-control"
+                 type="text"
+                 name="priority"
+                 value="{{priority}}" />
+      </p>
+      {% if errors.priority %}
+      <div class="alert alert-danger">{{errors.priority|join}}</div>
+      {% endif %}
+
+      {% if {{last-changed}} %}
+      <p>
+        <h5>Last changed</h5>
+        <time>{{last-changed}}</time>
+      </p>
+      {% endif %}
+      <br/>
+      <br/>
+      <div class="centered">
+        <input type="submit" class="btn btn-primary" value="save" />
+      </div>
+    </form>
+  </div>
+</div>
+{% endblock %}

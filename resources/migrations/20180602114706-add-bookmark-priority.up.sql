@@ -1,0 +1,3 @@
+ALTER TABLE bookmarks
+ADD priority INTEGER NOT NULL
+DEFAULT 0
