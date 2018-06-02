@@ -7,9 +7,7 @@
         {% for class in classes %}<option value="{{class.uuid}}" {% if class.selected %}selected{%endif%}><span class="label">{{class.label}}</span></option>
         {% endfor %}
       </select>
-      
     </p>
-    
     <ul class="bookmarks">
       {% for item in bookmarks %}
       <li>
@@ -23,6 +21,7 @@
   </div>
 </div>
 {% endblock %}
+
 {% block page-scripts %}
-  {% script "/js/home.js" %}
+{% script "/js/home.js" %}
 {% endblock %}

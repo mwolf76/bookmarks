@@ -23,15 +23,14 @@
 
 (defmethod hugsql.core/hugsql-result-fn :1 [sym]
   'bookmarks.db.core/result-one-snake->kebab)
-  
+
 (defmethod hugsql.core/hugsql-result-fn :one [sym]
   'bookmarks.db.core/result-one-snake->kebab)
 
 (defmethod hugsql.core/hugsql-result-fn :* [sym]
   'bookmarks.db.core/result-many-snake->kebab)
-  
+
 (defmethod hugsql.core/hugsql-result-fn :many [sym]
   'bookmarks.db.core/result-many-snake->kebab)
 
 (conman/bind-connection *db* "sql/queries.sql")
-

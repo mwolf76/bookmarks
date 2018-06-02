@@ -1,7 +1,7 @@
 CREATE TABLE bookmarks
 (id INTEGER PRIMARY KEY AUTO_INCREMENT,
  uuid UUID,
- url VARCHAR(1024),  
+ url VARCHAR(1024),
  descr VARCHAR(2048),
  owner VARCHAR(30),
  last_changed TIMESTAMP);

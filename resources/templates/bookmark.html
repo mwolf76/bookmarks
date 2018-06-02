@@ -1,4 +1,5 @@
 {% extends "edit.html" %}
+
 {% block content %}
 <div class="row">
   <div class="span12">
@@ -14,7 +15,7 @@
       {% if errors.class-uuids %}
       <div class="alert alert-danger">{{errors.class-uuids|join}}</div>
       {% endif %}
-      
+
       <p>
         <h5>URL</h5>
         <input class="form-control"
@@ -25,18 +26,29 @@
       {% if errors.url %}
       <div class="alert alert-danger">{{errors.url|join}}</div>
       {% endif %}
-      
+
       <p>
         <h5>Description</h5>
         <textarea class="form-control"
-                  rows="20"
+                  rows="2"
                   cols="50"
                   name="descr">{{descr}}</textarea>
       </p>
       {% if errors.descr %}
       <div class="alert alert-danger">{{errors.descr|join}}</div>
       {% endif %}
-      
+
+      <p>
+          <h5>Priority</h5>
+          <input class="form-control"
+                 type="text"
+                 name="priority"
+                 value="{{priority}}" />
+      </p>
+      {% if errors.priority %}
+      <div class="alert alert-danger">{{errors.priority|join}}</div>
+      {% endif %}
+
       {% if {{last-changed}} %}
       <p>
         <h5>Last changed</h5>

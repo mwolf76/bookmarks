@@ -15,7 +15,7 @@
   (POST "/bookmark/:uuid/save" [uuid :as req] (controllers/save-bookmark! req uuid))
   (GET  "/bookmark/:uuid/delete" [uuid :as req] (controllers/confirm-bookmark-deletion req uuid))
   (POST "/bookmark/:uuid/delete" [uuid :as req] (controllers/delete-bookmark! req uuid))
-  
+
   ;; classes management (add/edit/delete)
   ;; (GET  "/class/:uuid" [uuid :as req] (api/class req uuid))
   (GET  "/class/:uuid/edit" [uuid :as req] (controllers/edit-class req uuid))
@@ -26,5 +26,3 @@
   ;; bookmark-class relationship management
   (GET  "/class/:uuid/members/edit" [uuid :as req] (controllers/members-page req uuid))
   (POST "/class/:uuid/members/save" [uuid :as req] (controllers/alter-members! req uuid)))
-
-
