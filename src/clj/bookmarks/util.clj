@@ -1,5 +1,4 @@
-(ns bookmarks.util
-  (:require [clojure.tools.logging :as log]))
+(ns bookmarks.util)
 
 (defn valid-color-string?
   [s]
@@ -14,3 +13,7 @@
      (= \# (first s)))
     (every? valid-color-digit?
             (clojure.string/upper-case (subs s 1)))))
+
+(defn make-short-url
+  [url]
+  (str (subs url 0 (min 40 (count url))) " ..."))

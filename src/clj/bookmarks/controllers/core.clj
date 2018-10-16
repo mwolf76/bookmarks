@@ -70,7 +70,7 @@
 (defn validate-class[params]
   (first (st/validate params class-schema)))
 
-(defn home-page [{:keys [params]}]
+(defn home-page [{:keys [params session]}]
   (let [classes (db/all-classes)
         bookmarks (sort-by :priority
                            #(> %1 %2)
@@ -80,8 +80,14 @@
         (fn[bookmark]
           (db/get-bookmark-classes {:bookmark-id (:id bookmark)}))
 
-        labels
+        params-labels
         (:labels params)
+
+        session-labels
+        (:label session)
+
+        labels
+        (if params-labels params-labels session-labels)
 
         is-class-active?
         (fn [class]
@@ -107,10 +113,16 @@
         (map #(assoc % :selected (is-class-active? %)) classes)
 
         augmented-bookmarks
-        (map #(assoc % :classes (bookmark->classes %)) bookmarks)
+        (map #(assoc % :short-url
+                       (util/make-short-url (:url %))
+
+                       :classes
+                       (bookmark->classes %))
+             bookmarks)
         ]
 
-    (log/info labels)
+    (log/debug "Parameters labels: " params-labels)
+    (log/debug "Session labels: " session-labels)
 
     (layout/render
      "home.html"

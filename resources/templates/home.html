@@ -11,7 +11,7 @@
     <ul class="bookmarks">
       {% for item in bookmarks %}
       <li>
-        <a href="{{item.url}}" target="_blank">{{item.url}}</a>
+        <a href="{{item.url}}" target="_blank">{{item.short-url}}</a>
         {% for class in item.classes %}<span class="label" style="background: {{class.background}}; color: {{class.foreground}}">{{class.label}}</span>
         {% endfor %}
         <p>{{item.descr}}</p>
